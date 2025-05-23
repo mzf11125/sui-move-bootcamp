@@ -15,20 +15,17 @@ interface Response {
  * Extracts the IDs of the created Heroes and Swords NFTs, filtering by objectType.
  */
 export const parseCreatedObjectsIds = ({ objectChanges }: Args): Response => {
-  // TODO: Implement this function
   const createdObjects = objectChanges.filter(
     ({ type }) => type === "created"
   ) as SuiObjectChangeCreated[];
-  const swordsIds = createdObjects
-    .filter(
-      ({ objectType }) => objectType === `${ENV.PACKAGE_ID}::blacksmith::Sword`
-    )
-    .map(({ objectId }) => objectId);
-  const heroesIds = createdObjects
-    .filter(({ objectType }) => objectType === `${ENV.PACKAGE_ID}::hero::Hero`)
-    .map(({ objectId }) => objectId);
+  const swords = createdObjects.filter(
+    ({ objectType }) => objectType === `${ENV.PACKAGE_ID}::blacksmith::Sword`
+  );
+  const heroes = createdObjects.filter(
+    ({ objectType }) => objectType === `${ENV.PACKAGE_ID}::hero::Hero`
+  );
   return {
-    swordsIds,
-    heroesIds,
+    swordsIds: swords.map(({ objectId }) => objectId),
+    heroesIds: heroes.map(({ objectId }) => objectId),
   };
 };

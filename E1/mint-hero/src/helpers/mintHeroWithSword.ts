@@ -1,8 +1,8 @@
 import { SuiTransactionBlockResponse } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
-import { ENV } from "../env";
 import { suiClient } from "../suiClient";
 import { getSigner } from "./getSigner";
+import { ENV } from "../env";
 import { getAddress } from "./getAddress";
 
 /**
@@ -19,12 +19,12 @@ export const mintHeroWithSword =
     const hero = tx.moveCall({
       target: `${ENV.PACKAGE_ID}::hero::mint_hero`,
       arguments: [],
+      typeArguments: [],
     });
     const sword = tx.moveCall({
       target: `${ENV.PACKAGE_ID}::blacksmith::new_sword`,
-      arguments: [
-        tx.pure.u64(100), // attack
-      ],
+      arguments: [tx.pure.u64(10)],
+      typeArguments: [],
     });
     tx.moveCall({
       target: `${ENV.PACKAGE_ID}::hero::equip_sword`,
