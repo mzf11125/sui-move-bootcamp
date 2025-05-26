@@ -1,5 +1,6 @@
 import { useSuiClientQuery } from "@mysten/dapp-kit";
 import { SuiParsedData } from "@mysten/sui/client";
+import { Link } from "@radix-ui/themes";
 
 export const HeroesList = () => {
   const { data, isLoading, isError } = useSuiClientQuery(
@@ -36,9 +37,18 @@ export const HeroesList = () => {
   return (
     <div>
       <div>Found {data.length} Heroes.</div>
-      {data.map((heroId) => (
-        <div key={heroId}>{heroId}</div>
-      ))}
+      <ul>
+        {data.map((heroId) => (
+          <li key={heroId}>
+            <Link
+              href={`https://testnet.suivision.xyz/object/${heroId}`}
+              target="_blank"
+            >
+              {heroId}
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

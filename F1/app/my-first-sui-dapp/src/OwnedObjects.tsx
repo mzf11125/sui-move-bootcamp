@@ -8,8 +8,7 @@ export function OwnedObjects() {
     {
       owner: account?.address as string,
       filter: {
-        StructType:
-          "0x94624a023a87a8a09566dadc73e1104b9f29bd77c1aed1859b4010ee91a966c2::hero::Hero",
+        StructType: `${import.meta.env.VITE_PACKAGE_ID}::hero::Hero`,
       },
     },
     {
