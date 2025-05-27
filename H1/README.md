@@ -1,46 +1,71 @@
-## Package Upgrades
+# [H1]: Package Upgrades
 
-In this section we have the published package `package_upgrade` which involves
-the following modules.
+## What You Will Learn: Upgrading Packages in Sui Move
 
-##### blacksmith
+In this section, you will learn how to safely upgrade published Move packages on Sui, a critical skill for evolving on-chain applications. You will explore:
 
-Module `blacksmith` involves the `Blacksmith` capability object which can
-create `Sword`s and `Shield`s.
+- The concept of package immutability in Sui and why upgrades are necessary for iterative development.
+- How to perform package upgrades while maintaining the benefits of immutable code.
+- The use of versioned shared objects to manage state and restrict access to only the latest package version.
+- Safe migration patterns, including the use of `AdminCap` and migration functions to transition users and objects to upgraded logic.
+- Best practices for maintaining compatibility and deprecating old functionality.
 
-##### hero
+By the end of this section, you will be able to design and implement upgradeable Move packages, ensuring your smart contracts remain secure, maintainable, and up-to-date as requirements evolve.
 
-A `Hero` is a freely mintable NFT which can equip `Sword` and `Shield` under
-the dynamic field keys `"sword"` and `"shield"`.
+In this section we will work with upgrading a published package that implements a game with Heroes, Swords, and Shields.
 
-##### admin
+## Package Overview
 
+The package `package_upgrade` consists of the following modules:
+
+### blacksmith
+Module `blacksmith` involves the `Blacksmith` capability object which can create `Sword`s and `Shield`s.
+
+### hero
+A `Hero` is a freely mintable NFT which can equip `Sword` and `Shield` under the dynamic field keys `"sword"` and `"shield"`.
+
+### admin
 Includes the `AdminCap` used to create `Blacksmith` capability objects.
 
-##### package_version
+### package_version
+Uses the [Versioned Shared Objects](https://docs.sui.io/concepts/sui-move-concepts/packages/upgrade#versioned-shared-objects) pattern to enable deprecation of functions defined in previous package version.
 
-Uses the [Versioned Shared Objects](https://docs.sui.io/concepts/sui-move-concepts/packages/upgrade#versioned-shared-objects)
-pattern to enable deprecation of functions defined in previous package version.
+## Project Structure
 
-### Task
+The codebase consists of several key components:
 
-We want to upgrade our package with the following changes:
+1. `package_upgrade/sources/hero.move` - Contains the Hero NFT implementation
+2. `package_upgrade/sources/blacksmith.move` - Contains the Blacksmith and item implementations
+3. `package_upgrade/sources/version.move` - Contains version management for package upgrades
+4. `package_upgrade/sources/admin.move` - Contains admin capabilities
+5. `package_upgrade/Move.toml` - Package configuration and dependencies
 
-1. We want to bump our `VERSION` constant and `Version` shared-object `version`
-field to 2.
-2. We want to have `Hero` NFTs be purchasable with a price of 5 SUI in order
-instead of having it minted freely.
-3. Instead of using simple `String`s as dynamic field keys, we want to be more
-type-safe and used new structs for each item type that the hero can equip.
-4. We want to add the `power` property to our `Hero` NFT. The power should be
-increased every time the hero equips a sword or a shield with the attack or
-defence stat respectively.
+## Tasks to Complete
 
-### Useful Links
+There are four main tasks to implement in this project:
 
-- https://docs.sui.io/concepts/sui-move-concepts/packages/upgrade
+### 1. Update Package Version
+In `version.move`, update:
+- Bump the `VERSION` constant to 2
+- Update the `Version` shared object's version field to 2
+![Versioned Shared Object](./VersionedSharedObject.png)
 
-### TODO
+### 2. Implement Hero Purchase
+In `hero.move`, modify the hero creation to:
+- Replace free minting with a purchase system
+- Set the price to 5 SUI
+- Create a new `mint_hero_v2` function that accepts payment
 
-- Diagram depicting versioned shared object logic
-- Where to use &version as input?
+### 3. Add Type-Safe Equipment Keys
+In `hero.move`, implement:
+- New structs for sword and shield equipment keys
+- Update the equipment functions to use these type-safe keys instead of strings
+
+### 4. Add Hero Power
+In `hero.move`, add:
+- A `power` field to the `Hero` struct
+- Logic to increase power when equipping swords (by attack value) or shields (by defense value)
+
+## Useful Links
+
+- [Package Upgrades Documentation](https://docs.sui.io/concepts/sui-move-concepts/packages/upgrade)
