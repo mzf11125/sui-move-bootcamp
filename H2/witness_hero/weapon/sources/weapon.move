@@ -65,7 +65,7 @@ entry fun whitelist_witness<T>(p: &Publisher, allow_list: &mut AllowList) {
     if (!already_exists) {
         allow_list.witness_types.add(witness_type, true);
     } else {
-        *allow_list.witness_types.borrow_mut(witness_type) = false;
+        *allow_list.witness_types.borrow_mut(witness_type) = true;
     };
 }
 
