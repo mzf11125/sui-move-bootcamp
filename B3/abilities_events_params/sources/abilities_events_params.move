@@ -3,7 +3,6 @@
 /// It showcases the use of structs, resources, shared objects, events, and testing
 /// within a Sui Move smart contract.
 module abilities_events_params::abilities_events_params;
-
 use std::string::String;
 use sui::event;
 
@@ -157,7 +156,9 @@ fun get_medal(name: String, medalStorage: &mut MedalStorage): option::Option<Med
 #[test_only]
 use sui::test_scenario as ts;
 #[test_only]
-use sui::test_utils::{destroy, assert_eq};
+use sui::test_utils::{destroy};
+#[test_only]
+use std::unit_test::assert_eq;
 #[test_only]
 use sui::test_scenario::{take_shared, return_shared};
 
@@ -168,12 +169,16 @@ fun test_hero_creation() {
     init(test.ctx());
     test.next_tx(@USER);
     let mut registry = take_shared<HeroRegistry>(&test);
-    let hero = mint_hero(b"Flash".to_string(), &mut registry, test.ctx()); //Check if `Hero` Object has the correct `name`
-    assert_eq(
+    let hero = mint_hero(
+        b"Flash".to_string(),
+        &mut registry,
+        test.ctx(),
+    ); //Check if `Hero` Object has the correct `name`
+    assert_eq!(
         hero.name,
         b"Flash".to_string(),
     );
-    assert_eq(registry.heroes.length(), 1);
+    assert_eq!(registry.heroes.length(), 1);
     return_shared(registry);
     destroy(hero);
     test.end();
@@ -188,10 +193,12 @@ fun test_event_thrown() {
     let mut registry = take_shared<HeroRegistry>(&test);
     let hero = mint_hero(b"Flash".to_string(), &mut registry, test.ctx());
     let hero2 = mint_hero(b"Flash".to_string(), &mut registry, test.ctx());
-    assert_eq(hero.name, b"Flash".to_string()); //Check if there are 2 heroes created
-    assert_eq(registry.heroes.length(), 2); //Capture all the events
-    let events: vector<HeroMinted> = event::events_by_type<HeroMinted>(); //Check if there are 2 events
-    assert_eq(events.length(), 2); //Iterate all the events for that test
+    assert_eq!(hero.name, b"Flash".to_string()); //Check if there are 2 heroes created
+    assert_eq!(registry.heroes.length(), 2); //Capture all the events
+    let events: vector<HeroMinted> = event::events_by_type<
+        HeroMinted,
+    >(); //Check if there are 2 events
+    assert_eq!(events.length(), 2); //Iterate all the events for that test
     let mut i = 0;
     while (i < events.length()) {
         //Check that all events where emited by the @USER
@@ -218,16 +225,16 @@ fun test_medal_award() {
     award_medal_of_honor(&mut hero, &mut medalStorage);
 
     //Check that the sizes where modified after the transaction
-    assert_eq(hero.medals.length(), 1);
-    assert_eq(medalStorage.medals.length(), 2);
+    assert_eq!(hero.medals.length(), 1);
+    assert_eq!(medalStorage.medals.length(), 2);
 
     award_medal_of_merit(&mut hero, &mut medalStorage);
-    assert_eq(hero.medals.length(), 2);
-    assert_eq(medalStorage.medals.length(), 1);
+    assert_eq!(hero.medals.length(), 2);
+    assert_eq!(medalStorage.medals.length(), 1);
 
     award_medal_of_cross(&mut hero, &mut medalStorage);
-    assert_eq(hero.medals.length(), 3);
-    assert_eq(medalStorage.medals.length(), 0);
+    assert_eq!(hero.medals.length(), 3);
+    assert_eq!(medalStorage.medals.length(), 0);
 
     return_shared(registry);
     return_shared(medalStorage);
@@ -248,8 +255,8 @@ fun test_medal_award_error() {
 
     award_medal_of_honor(&mut hero, &mut medalStorage);
     //Check that the sizes where modified after the transaction
-    assert_eq(hero.medals.length(), 1);
-    assert_eq(medalStorage.medals.length(), 2);
+    assert_eq!(hero.medals.length(), 1);
+    assert_eq!(medalStorage.medals.length(), 2);
 
     //Try to award again, the medal is not available
     award_medal_of_honor(&mut hero, &mut medalStorage);
