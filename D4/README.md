@@ -18,7 +18,7 @@ On Sui, <i>[Programmable Transaction Blocks](https://docs.sui.io/concepts/transa
 
 ```
 SUI_NETWORK=https://rpc.testnet.sui.io:443
-RECIPIENT_ADDRESS=0xCAFE
+RECIPIENT_ADDRESS=0x0000000000000000000000000000000000000000000000000000000000000001
 USER_SECRET_KEY=
 ```
 
