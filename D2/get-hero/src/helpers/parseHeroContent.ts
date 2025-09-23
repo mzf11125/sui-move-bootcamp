@@ -1,17 +1,20 @@
-import { SuiObjectResponse } from "@mysten/sui/client";
+import { SuiObjectResponse } from '@mysten/sui/client'
 
 export interface Hero {
-  id: string;
-  health: string;
-  stamina: string;
+	id: string
+	health: string
+	stamina: string
 }
 
 interface HeroContent {
-  fields: {
-    id: { id: string };
-    health: string;
-    stamina: string;
-  };
+	fields: {
+		id: { id: string }
+		health: string
+		stamina: string
+	}
+	dataType: string
+	type: string
+	hasPublicTransfer: boolean
 }
 
 /**
@@ -19,6 +22,10 @@ interface HeroContent {
  * Maps it to a Hero object.
  */
 export const parseHeroContent = (objectResponse: SuiObjectResponse): Hero => {
-  // TODO: Implement the function
-  return {} as Hero;
-};
+	const objectContent = objectResponse?.data?.content as HeroContent
+	return {
+		id: objectContent?.fields?.id.id,
+		health: objectContent?.fields.health,
+		stamina: objectContent?.fields.stamina,
+	}
+}
