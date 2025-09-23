@@ -1,12 +1,12 @@
-import { SuiObjectChange } from "@mysten/sui/client";
+import { SuiObjectChange } from '@mysten/sui/client'
 
 interface Args {
-  objectChanges: SuiObjectChange[];
+	objectChanges: SuiObjectChange[]
 }
 
 interface Response {
-  swordsIds: string[];
-  heroesIds: string[];
+	swordsIds: string[]
+	heroesIds: string[]
 }
 
 /**
@@ -14,9 +14,18 @@ interface Response {
  * Extracts the IDs of the created Heroes and Swords NFTs, filtering by objectType.
  */
 export const parseCreatedObjectsIds = ({ objectChanges }: Args): Response => {
-  // TODO: Implement this function
-  return {
-    swordsIds: [],
-    heroesIds: [],
-  };
-};
+	const heroesIds: string[] = []
+	const swordsIds: string[] = []
+
+	objectChanges.forEach((objectChange) => {
+		if (objectChange.type === 'created') {
+			const { objectId, objectType } = objectChange
+			if (objectType.endsWith('::hero::Hero')) heroesIds.push(objectId)
+			if (objectType.endsWith('::blacksmith::Sword')) swordsIds.push(objectId)
+		}
+	})
+	return {
+		swordsIds,
+		heroesIds,
+	}
+}
