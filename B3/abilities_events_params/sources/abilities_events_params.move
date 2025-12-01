@@ -4,18 +4,29 @@ use std::string::String;
 use sui::event;
 
 //Error Codes
-const EMedalOfHonorNotAvailable: u64 = 111;
+// const EMedalOfHonorNotAvailable: u64 = 111;
 
 // Structs
+
+public struct Medal has key, store {
+    id: UID,
+    name: String,
+}
 
 public struct Hero has key {
     id: UID, // required
     name: String,
+    medals: vector<Medal>,
 }
 
 public struct HeroRegistry has key, store {
     id: UID,
     heroes: vector<ID>,
+}
+
+public struct HeroMinted has copy, drop {
+    hero_id: ID,
+    creator: address,
 }
 
 // Module Initializer
@@ -31,9 +42,26 @@ public fun mint_hero(registry: &mut HeroRegistry, name: String, ctx: &mut TxCont
     let hero = Hero {
         id: object::new(ctx), // creates a new UID
         name,
+        medals: vector::empty(),
     };
+
+    let hero_minted_event = HeroMinted {
+        hero_id: object::id(&hero),
+        creator: tx_context::sender(ctx),
+    };
+
+    event::emit(hero_minted_event);
+
     registry.heroes.push_back(object::id(&hero));
     hero
+}
+
+public fun equip_medal(hero: &mut Hero, name: String, ctx: &mut TxContext) {
+    let medal = Medal {
+        id: object::new(ctx),
+        name,
+    };
+    hero.medals.push_back(medal);
 }
 
 /////// Tests ///////
@@ -69,7 +97,7 @@ fun test_hero_creation() {
     assert_eq!(hero.name, b"Flash".to_string());
 
     test.next_tx(@USER);
-    let mut registry = take_shared<HeroRegistry>(&test);
+    let registry = take_shared<HeroRegistry>(&test);
     assert_eq!(registry.heroes.length(), 1);
     return_shared(registry);
 
@@ -89,7 +117,23 @@ fun test_hero_creation() {
 //      5. Assert that the `owner` field of the emitted event matches the expected address (e.g., @USER).
 //--------------------------------------------------------------
 #[test]
-fun test_event_thrown() { assert_eq!(1, 1); }
+fun test_event_thrown() {
+    let mut test = ts::begin(@USER);
+    init(test.ctx());
+    test.next_tx(@USER);
+
+    // Get Hero Registry
+    let mut registry = take_shared<HeroRegistry>(&test);
+    let hero = mint_hero(&mut registry, b"Batman".to_string(), test.ctx());
+    return_shared(registry);
+    let events: vector<HeroMinted> = event::events_by_type<
+        HeroMinted,
+    >();
+    assert_eq!(events.length(), 1);
+
+    destroy(hero);
+    test.end();
+}
 
 //--------------------------------------------------------------
 //  Test 3: Medal Awarding
@@ -105,4 +149,19 @@ fun test_event_thrown() { assert_eq!(1, 1); }
 //      7. Consider creating a shared `MedalStorage` object to manage the available medals.
 //--------------------------------------------------------------
 #[test]
-fun test_medal_award() { assert_eq!(1, 1); }
+fun test_medal_award() {
+    let mut test = ts::begin(@USER);
+    init(test.ctx());
+    test.next_tx(@USER);
+
+    // Get Hero Registry
+    let mut registry = take_shared<HeroRegistry>(&test);
+    let mut hero = mint_hero(&mut registry, b"Superman".to_string(), test.ctx());
+    return_shared(registry);
+
+    equip_medal(&mut hero, b"Medal of Honor".to_string(), test.ctx());
+    assert_eq!(hero.medals.length(), 1);
+
+    destroy(hero);
+    test.end();
+}
