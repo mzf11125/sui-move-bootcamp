@@ -1,4 +1,5 @@
 module abilities_events_params::abilities_events_params;
+
 use std::string::String;
 use sui::event;
 
@@ -12,20 +13,27 @@ public struct Hero has key {
     name: String,
 }
 
-// Module Initializer
-fun init(ctx: &mut TxContext) {}
+public struct HeroRegistry has key, store {
+    id: UID,
+    heroes: vector<ID>,
+}
 
-public fun mint_hero(name: String, ctx: &mut TxContext): Hero {
-    let freshHero = Hero {
+// Module Initializer
+fun init(ctx: &mut TxContext) {
+    let registry = HeroRegistry {
+        id: object::new(ctx),
+        heroes: vector::empty(),
+    };
+    transfer::share_object(registry);
+}
+
+public fun mint_hero(registry: &mut HeroRegistry, name: String, ctx: &mut TxContext): Hero {
+    let hero = Hero {
         id: object::new(ctx), // creates a new UID
         name,
     };
-    freshHero
-}
-
-public fun mint_and_keep_hero(name: String, ctx: &mut TxContext) {
-    let hero = mint_hero(name, ctx);
-    transfer::transfer(hero, ctx.sender());
+    registry.heroes.push_back(object::id(&hero));
+    hero
 }
 
 /////// Tests ///////
@@ -54,10 +62,16 @@ fun test_hero_creation() {
     init(test.ctx());
     test.next_tx(@USER);
 
-    //Get hero Registry
-
-    let hero = mint_hero(b"Flash".to_string(), test.ctx());
+    // Get Hero Registry
+    let mut registry = take_shared<HeroRegistry>(&test);
+    let hero = mint_hero(&mut registry, b"Flash".to_string(), test.ctx());
+    return_shared(registry);
     assert_eq!(hero.name, b"Flash".to_string());
+
+    test.next_tx(@USER);
+    let mut registry = take_shared<HeroRegistry>(&test);
+    assert_eq!(registry.heroes.length(), 1);
+    return_shared(registry);
 
     destroy(hero);
     test.end();
