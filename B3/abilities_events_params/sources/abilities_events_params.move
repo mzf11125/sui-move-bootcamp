@@ -5,12 +5,11 @@
 module abilities_events_params::abilities_events_params;
 use std::string::String;
 use sui::event;
-use std::vector;
 
 /// Error codes - Used for clarity and easier debugging.
 
 /// Error code used when attempting to award a medal that is not available.
-const EMedalOfHonorNotAvailable: u64 = 111;
+// const EMedalOfHonorNotAvailable: u64 = 111;
 
 // Structs: Define the data structures used in the module.
 
@@ -116,8 +115,6 @@ use sui::test_scenario as ts;
 use sui::test_utils::{destroy};
 #[test_only]
 use std::unit_test::assert_eq;
-#[test_only]
-use sui::test_scenario::{take_shared, return_shared};
 
 /// Basic test case to check `Hero` Object creation
 #[test]
@@ -148,9 +145,9 @@ fun test_event_thrown() {
     let hero2 = mint_hero(b"Ozymandias".to_string(), test.ctx());
 
     // Capture all the events
-    let events: vector<HeroMinted> = event::events_by_type<HeroMinted>();
+    let events = event::events_by_type<HeroMinted>();
     // Check if there is 1 event
-    assert_eq!(events.length(), 1);
+    assert_eq!(events.length(), 2);
     // Iterate all the events for that test
     let mut i = 0;
     while (i < events.length()) {
