@@ -17,36 +17,65 @@ fun test_numbers() {
 
 #[test]
 fun test_overflow() {
-    let a = 500;
-    let b = 500;
+    let _a = 500;
+    let _b = 500;
 
     assert!(1000 == 1000u16, 604);
 }
 
 #[test]
-fun test_mutability() {}
+fun test_mutability() {
+    let mut x = 100;
+    x = x - 10;
+    assert!(x == 90, 100);
+}
 
 #[test]
-fun test_boolean() {}
+fun test_boolean() {
+    // let flag = true;
+    // assert!(flag == true, 603);
+    let a = 1;
+    let b = 2;
+    assert!(a < b, 100);
+}
 
 #[test]
-fun test_loop() {}
+fun test_loop() {
+    let mut i = 0;
+    let mut sum = 0;
+    while (i < 5) {
+        sum = sum + i;
+        i = i + 1; 
+    };
+    // std::debug::print(&("Sum is: ".to_string() + &sum.to_string()));
+    // assert!(sum == 10, 602);
+    std::debug::print(&sum);        
+    assert!(sum == 10, 602);
+}
 
 #[test]
 fun test_vector() {
-    let mut myVec: vector<u8> = vector[10, 20, 30];
-
-    assert!(myVec.is_empty() == true);
+    let mut _myVec: vector<u8> = vector[10, 20, 30];
+    assert!(_myVec.length() == 3, 605);
+    _myVec.push_back(40);   
+    assert!(!_myVec.is_empty(), 606 );
+    _myVec.push_back(50);
+    assert!(_myVec.length() == 5, 607);
 }
 
 #[test]
 fun test_string() {
     let myStringArr: vector<u8> = b"Hello, World!";
+    let myString: String = myStringArr.to_string();
+    assert!(myString == "Hello, World!", 608);
+    std::debug::print(&myString);
+    std::debug::print(&myStringArr.length());
+    std::debug::print(&myStringArr);
 }
 
 #[test]
 fun test_string2() {
-    let myStringArr = b"Hello, World!";
+    let _myStringArr = b"Hello, World!";
 }
 
 public struct Container has key {
