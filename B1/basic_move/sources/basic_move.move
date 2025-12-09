@@ -2,6 +2,8 @@
 module basic_move::basic_move; //Should be the same name as the folder name
 use sui::test_scenario;
 use std::string::String;
+// use std::option::destroy;
+// use std::string::Destrostringy;
 // const ErrorOne: u64 = 1;
 // const Error2: u64 = 100;
 const NumberOneIsNotEqualToOne: u64 = 100;
@@ -40,6 +42,7 @@ fun test_mint() {
     assert!(minted_hero.name == b"Zidan".to_string(), NumberOneIsNotEqualToOne);
     assert!(minted_hero.age == 30, NumberOneIsNotEqualToOne);
     // assert!( 1 == 0, 100);
+
     destroy_for_testing(minted_hero);
     // let Hero { id } = minted_hero;
 
@@ -49,7 +52,20 @@ fun test_mint() {
 }
 
 #[test]
-fun test_drop_semantics() {}
+fun test_drop_semantics() {
+    let fail_weapon = create_insignificant_weapon(5);
+
+    // destroy(fail_weapon);
+    let InsignificantWeapon { power: _ } = fail_weapon;
+
+    // let mut _insignificant_weapon = create_insignificant_weapon(0);
+    // let _success_weapon = create_insignificant_weapon(10);
+
+    // _insignificant_weapon = create_insignificant_weapon(20);
+    // drop _fail_weapon; // This line would cause a compile-time error because InsignificantWeapon does not have the drop ability
+    // We cannot explicitly drop _fail_weapon because it lacks the drop ability
+    // This is allowed because we are not explicitly dropping it, we are just reassigning the variable
+}
 
 #[test_only]
 fun destroy_for_testing(hero: Hero){
@@ -77,3 +93,4 @@ fun destroy_for_testing(hero: Hero){
 //object::new(ctx) => Creates a new sui object and returns its UID
 //transfer::public_transfer(object, ctx.sender()) => Transfers the object to the sender of the transaction
 //#[lint_allow(self_transfer)] => Is an attribute that allows you to transfer an object to yourself without getting a lint warning
+//_(Underscore)=> Is used to ignore a value, in this case we are ignoring the name, surname and age of the hero when we destructure it in the destroy_for_testing function
