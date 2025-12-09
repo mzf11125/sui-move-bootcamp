@@ -1,4 +1,3 @@
-/*
 #[test_only]
 module basic_move::basic_move_tests;
 // uncomment this line to import the module
@@ -15,4 +14,4 @@ fun test_basic_move() {
 fun test_basic_move_fail() {
     abort ENotImplemented
 }
-*/
+
