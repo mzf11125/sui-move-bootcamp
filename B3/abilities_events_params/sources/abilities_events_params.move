@@ -7,26 +7,75 @@ const EMedalOfHonorNotAvailable: u64 = 111;
 
 // Structs
 
+public struct HeroRegistry has key {
+    id: UID,
+    heroes: vector<ID>,
+
+}
+
+public struct Medal has key, store {
+    id: UID,
+    name: String,   
+}
+
+public struct MedalStorage has key {
+    id: UID,
+    medals: vector<Medal>,
+}
+
 public struct Hero has key {
     id: UID, // required
     name: String,
+    medals: vector<Medal>,
+}
+
+public struct HeroMinted has copy, drop {
+    hero_id: ID,
+    owner: address,
 }
 
 // Module Initializer
 fun init(ctx: &mut TxContext) {}
 
-public fun mint_hero(name: String, ctx: &mut TxContext): Hero {
+public fun mint_hero(name: String, registry: &mut HeroRegistry, ctx: &mut TxContext): Hero {
     let freshHero = Hero {
         id: object::new(ctx), // creates a new UID
         name,
+        medals: vector::empty<Medal>(),
     };
+    // Emit HeroMinted event
+    let event: HeroMinted = HeroMinted {
+        hero_id: object::id(&freshHero),
+        owner: ctx.sender(),
+    };
+
+    registry.heroes.push_back(object::id(&freshHero));
+
     freshHero
 }
 
-public fun mint_and_keep_hero(name: String, ctx: &mut TxContext) {
-    let hero = mint_hero(name, ctx);
+public fun mint_and_keep_hero(name: String, registry: &mut HeroRegistry, ctx: &mut TxContext) {
+    let hero = mint_hero(name, registry, ctx);
     transfer::transfer(hero, ctx.sender());
 }
+
+fun award_medal_of_honor(hero: &mut Hero, medalStorage: &mut MedalStorage, medalName: String) {
+    // let medalIndex = vector::index_of(&medalStorage.medals, |medal: &Medal| {
+    //     // medal.name == medalName
+    // });
+    let medalIndex = option::none<u64>(); // Placeholder for Option<u64> index found
+    if (option::is_none(&medalIndex)) {
+        abort EMedalOfHonorNotAvailable;
+    }
+    let index = option::extract(medalIndex);
+}
+
+
+fun nameTest(hero: &mut Hero){
+    
+
+}
+
 
 /////// Tests ///////
 
@@ -74,8 +123,28 @@ fun test_hero_creation() {
 //      4. Assert that the number of emitted `HeroMinted` events is 1.
 //      5. Assert that the `owner` field of the emitted event matches the expected address (e.g., @USER).
 //--------------------------------------------------------------
+
+
+
+
 #[test]
-fun test_event_thrown() { assert_eq!(1, 1); }
+fun test_event_thrown() { 
+    let HeroMinted { hero_id: _, owner } = event::events_by_type<>()[0];
+     assert_eq!(owner, @USER);
+
+
+
+    assert_eq!(1, 1); 
+    assert_eq!(2, 2)
+    
+    
+}
+
+
+#[test_only]
+
+
+
 
 //--------------------------------------------------------------
 //  Test 3: Medal Awarding
