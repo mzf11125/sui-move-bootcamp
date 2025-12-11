@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@mysten/create-dapp": "^0.5.12"
+  }
+}
